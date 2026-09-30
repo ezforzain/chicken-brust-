@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="./image-slot.js"></script>
+<style>body{margin:0;background:#EDEDEB;font-family:'Geist',Helvetica,Arial,sans-serif;color:#111;-webkit-font-smoothing:antialiased}a{color:#111}a:hover{color:#E0521B}input::placeholder{color:#9A9A96}button,input{font-family:inherit}</style>
+</helmet>
+<div style="display:flex;min-height:100vh;background:#EDEDEB">
+  <!-- SIDEBAR -->
+  <aside style="width:240px;flex-shrink:0;background:{{ sb.bg }};color:{{ sb.text }};display:flex;flex-direction:column;gap:22px;padding:24px 16px 20px;box-sizing:border-box;position:sticky;top:0;height:100vh;align-self:flex-start;z-index:30">
+    <div style="display:flex;align-items:center;gap:10px;padding:0 8px">
+      <div style="width:38px;height:38px;border-radius:50%;background:#E0521B;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:14px">CB</div>
+      <div style="display:flex;flex-direction:column;gap:1px"><span style="font-size:15px;font-weight:600;letter-spacing:-0.01em">Chicken Brust</span><span style="font-size:11px;color:{{ sb.muted }}">Admin panel</span></div>
+    </div>
+    <div style="padding:14px;border-radius:22px;background:{{ sb.card }};display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="width:8px;height:8px;border-radius:50%;background:{{ storeDot }};box-shadow:0 0 0 4px {{ storeHalo }}"></span><span style="font-size:13px;font-weight:600">{{ storeLabel }}</span></div>
+        <div onClick="{{ toggleStore }}" style="width:40px;height:24px;border-radius:12px;background:{{ storeTrack }};position:relative;cursor:pointer;transition:background .2s;flex-shrink:0"><span style="position:absolute;top:3px;left:{{ storeKnob }};width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s"></span></div>
+      </div>
+      <span style="font-size:11px;line-height:1.4;color:{{ sb.muted }}">DHA Phase 5 branch · 11am – 2am</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <span style="padding:0 16px;font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;color:{{ sb.muted }}">Manage</span>
+      <nav style="display:flex;flex-direction:column;gap:4px">
+        <sc-for list="{{ nav }}" as="n" hint-placeholder-count="5">
+          <button onClick="{{ n.go }}" style="height:44px;border:none;border-radius:22px;background:{{ n.bg }};color:{{ n.color }};display:flex;align-items:center;gap:12px;padding:0 16px;font-size:14px;font-weight:500;cursor:pointer;text-align:left">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="{{ n.icon }}"></path></svg>
+            <span style="flex:1">{{ n.label }}</span>
+            <sc-if value="{{ n.badge }}" hint-placeholder-val="{{ false }}"><span style="min-width:20px;height:20px;border-radius:10px;background:#E0521B;color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;padding:0 6px;box-sizing:border-box">{{ n.badge }}</span></sc-if>
+          </button>
+        </sc-for>
+      </nav>
+    </div>
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:4px;padding-top:16px;border-top:1px solid {{ sb.line }}">
+      <button onClick="{{ onSettings }}" style="height:42px;border:none;border-radius:21px;background:{{ setBg }};color:{{ setColor }};display:flex;align-items:center;gap:12px;padding:0 16px;font-size:14px;font-weight:500;cursor:pointer;text-align:left"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"></path></svg>Settings</button>
+      <button onClick="{{ onLogout }}" style="height:42px;border:none;border-radius:21px;background:transparent;color:#E0521B;display:flex;align-items:center;gap:12px;padding:0 16px;font-size:14px;font-weight:500;cursor:pointer;text-align:left"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"></path></svg>Log out</button>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main style="flex:1;min-width:0;padding:0 32px 48px;box-sizing:border-box;display:flex;flex-direction:column;gap:24px">
+    <header style="position:sticky;top:0;z-index:20;background:#EDEDEB;margin:0 -32px;padding:24px 32px 16px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+      <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:12px;color:#9A9A96">Tuesday, 29 Sep</span><span data-screen-label="{{ pageLabel }}" style="font-size:28px;font-weight:600;letter-spacing:-0.035em">{{ pageTitle }}</span></div>
+      <div style="display:flex;gap:10px;align-items:center">
+        <div style="width:280px;max-width:100%;height:46px;border-radius:23px;background:#fff;display:flex;align-items:center;gap:10px;padding:0 18px;box-sizing:border-box"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="6.5"></circle><path d="M16 16l4 4"></path></svg><input value="{{ query }}" onChange="{{ onQuery }}" placeholder="Search orders, customers or dishes" style="flex:1;border:none;outline:none;background:none;font-size:13px;min-width:0"></input></div>
+        <button onClick="{{ goOrders }}" style="position:relative;width:46px;height:46px;border-radius:50%;border:none;background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l2 2H4z"></path><path d="M10 20a2 2 0 0 0 4 0"></path></svg><sc-if value="{{ newCount }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:9px;right:10px;width:9px;height:9px;border-radius:50%;background:#E0521B;border:2px solid #fff"></span></sc-if></button>
+        <div style="display:flex;align-items:center;gap:10px;height:46px;padding:0 16px 0 5px;border-radius:23px;background:#fff"><img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=120&q=70&auto=format&fit=crop" alt="Bilal Ahmed" style="width:36px;height:36px;border-radius:50%;object-fit:cover"></img><div style="display:flex;flex-direction:column"><span style="font-size:13px;font-weight:600">Bilal Ahmed</span><span style="font-size:11px;color:#9A9A96">Branch manager</span></div></div>
+      </div>
+    </header>
+
+    <!-- DASHBOARD -->
+    <sc-if value="{{ isDash }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+        <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+          <div style="padding:20px;border-radius:26px;background:{{ k.bg }};color:{{ k.color }};display:flex;flex-direction:column;gap:14px">
+            <span style="font-size:13px;opacity:0.7">{{ k.label }}</span>
+            <span style="font-size:32px;font-weight:600;letter-spacing:-0.04em;line-height:1">{{ k.value }}</span>
+            <span style="font-size:12px;opacity:0.7">{{ k.sub }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px">
+        <div style="padding:22px;border-radius:28px;background:#fff;display:flex;flex-direction:column;gap:18px">
+          <div style="display:flex;justify-content:space-between;align-items:flex-end"><div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:15px;font-weight:600">Today's sales</span><span style="font-size:12px;color:#9A9A96">Hourly breakdown</span></div><span style="font-size:22px;font-weight:600;letter-spacing:-0.03em">Rs {{ salesLabel }}</span></div>
+          <div style="height:200px;display:flex;align-items:flex-end;gap:8px">
+            <sc-for list="{{ hours }}" as="h" hint-placeholder-count="12">
+              <div style="flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px">
+                <div title="{{ h.tip }}" style="width:100%;max-width:28px;height:{{ h.h }};border-radius:10px;background:{{ h.bg }}"></div>
+                <span style="font-size:10px;color:#9A9A96">{{ h.label }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="padding:22px;border-radius:28px;background:#fff;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:15px;font-weight:600">Live queue</span><button onClick="{{ goOrders }}" style="border:none;background:none;font-size:12px;color:#9A9A96;cursor:pointer">All orders ›</button></div>
+          <sc-for list="{{ queue }}" as="o" hint-placeholder-count="4">
+            <div onClick="{{ o.open }}" style="display:flex;align-items:center;gap:12px;padding:10px;border-radius:20px;background:#F6F6F5;cursor:pointer">
+              <div style="width:44px;height:44px;border-radius:14px;overflow:hidden;flex-shrink:0"><img src="{{ o.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></img></div>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:13px;font-weight:600">{{ o.id }} · {{ o.customer }}</span><span style="font-size:11px;color:#9A9A96;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ o.summary }}</span></div>
+              <span style="height:26px;padding:0 10px;border-radius:13px;background:{{ o.pillBg }};color:{{ o.pillColor }};font-size:11px;font-weight:600;display:flex;align-items:center;white-space:nowrap">{{ o.statusLabel }}</span>
+              <button onClick="{{ o.cancel }}" title="Cancel order" style="height:34px;padding:0 14px;border-radius:17px;border:1px solid #F1D3C6;background:{{ o.cancelBg }};color:{{ o.cancelColor }};font-size:12px;cursor:pointer;white-space:nowrap">{{ o.cancelLabel }}</button>
+              <button onClick="{{ o.advance }}" style="height:34px;padding:0 14px;border-radius:17px;border:none;background:#111;color:#fff;font-size:12px;cursor:pointer;white-space:nowrap">{{ o.nextLabel }}</button>
+            </div>
+          </sc-for>
+          <sc-if value="{{ queueEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:32px 0;text-align:center;font-size:13px;color:#9A9A96">No active orders</div></sc-if>
+        </div>
+      </div>
+      <div style="padding:22px;border-radius:28px;background:#fff;display:flex;flex-direction:column;gap:14px">
+        <span style="font-size:15px;font-weight:600">Top dishes · today</span>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px">
+          <sc-for list="{{ topDishes }}" as="t" hint-placeholder-count="4">
+            <div onClick="{{ t.open }}" style="display:flex;align-items:center;gap:12px;padding:8px;border-radius:20px;background:#F6F6F5;cursor:pointer" style-hover="background:#EDEDEA">
+              <img src="{{ t.img }}" alt="" style="width:52px;height:52px;border-radius:16px;object-fit:cover;flex-shrink:0"></img>
+              <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:2px"><span style="font-size:13px;font-weight:600">{{ t.name }}</span><span style="font-size:11px;color:#9A9A96">{{ t.sold }} sold</span></div>
+              <span style="font-size:13px;font-weight:600;color:#E0521B;padding-right:8px">#{{ t.rank }}</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ORDERS -->
+    <sc-if value="{{ isOrders }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ statusTabs }}" as="st" hint-placeholder-count="6">
+          <button onClick="{{ st.pick }}" style="height:38px;padding:0 16px;border-radius:19px;border:1px solid {{ st.border }};background:{{ st.bg }};color:{{ st.color }};font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px">{{ st.label }}<span style="opacity:0.6">{{ st.count }}</span></button>
+        </sc-for>
+      </div>
+      <div style="border-radius:28px;background:#fff;padding:8px;overflow-x:auto">
+        <div style="min-width:860px;display:flex;flex-direction:column">
+          <div style="display:grid;grid-template-columns:100px 1.3fr 1.8fr 100px 110px 120px 70px;gap:12px;padding:12px 16px;font-size:11px;font-weight:600;color:#9A9A96;text-transform:uppercase;letter-spacing:0.04em"><span>Order</span><span>Customer</span><span>Items</span><span>Total</span><span>Payment</span><span>Status</span><span>Time</span></div>
+          <sc-for list="{{ orderRows }}" as="o" hint-placeholder-count="6">
+            <div onClick="{{ o.open }}" style="display:grid;grid-template-columns:100px 1.3fr 1.8fr 100px 110px 120px 70px;gap:12px;align-items:center;padding:{{ rowPad }} 16px;border-top:1px solid #F0F0EE;font-size:13px;cursor:pointer;border-radius:16px;background:{{ o.rowBg }}" style-hover="background:#F6F6F5">
+              <span style="font-weight:600">{{ o.id }}</span>
+              <div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-weight:500">{{ o.customer }}</span><span style="font-size:11px;color:#9A9A96">{{ o.area }}</span></div>
+              <span style="color:#555;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ o.summary }}</span>
+              <span style="font-weight:600">Rs {{ o.totalLabel }}</span>
+              <span style="color:#555">{{ o.pay }}</span>
+              <span style="justify-self:start;height:26px;padding:0 10px;border-radius:13px;background:{{ o.pillBg }};color:{{ o.pillColor }};font-size:11px;font-weight:600;display:flex;align-items:center;white-space:nowrap">{{ o.statusLabel }}</span>
+              <span style="color:#9A9A96">{{ o.time }}</span>
+            </div>
+          </sc-for>
+          <sc-if value="{{ ordersEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:40px 0;text-align:center;font-size:13px;color:#9A9A96">No orders match this filter</div></sc-if>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- MENU -->
+    <sc-if value="{{ isMenu }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <sc-for list="{{ cats }}" as="ct" hint-placeholder-count="5">
+            <button onClick="{{ ct.pick }}" style="height:38px;padding:0 16px;border-radius:19px;border:1px solid {{ ct.border }};background:{{ ct.bg }};color:{{ ct.color }};font-size:13px;font-weight:500;cursor:pointer">{{ ct.label }}</button>
+          </sc-for>
+        </div>
+        <div style="display:flex;align-items:center;gap:14px"><span style="font-size:13px;color:#9A9A96">{{ availLabel }}</span><button onClick="{{ openAdd }}" style="height:42px;padding:0 20px;border-radius:21px;border:none;background:#111;color:#fff;font-size:13px;font-weight:500;cursor:pointer;display:flex;align-items:center;gap:8px"><span style="font-size:18px;line-height:1">+</span>Add new dish</button></div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px">
+        <sc-for list="{{ menuRows }}" as="d" hint-placeholder-count="8">
+          <div style="background:#fff;border-radius:26px;padding:10px;display:flex;flex-direction:column;gap:10px;opacity:{{ d.opacity }}">
+            <div style="height:140px;border-radius:18px;overflow:hidden;background:#F3F3F2;position:relative"><sc-if value="{{ d.img }}" hint-placeholder-val="{{ true }}"><img src="{{ d.img }}" alt="" style="width:100%;height:100%;object-fit:cover;display:block"></img></sc-if><sc-if value="{{ d.noImg }}" hint-placeholder-val="{{ false }}"><label style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;color:#9A9A96;font-size:12px;background:repeating-linear-gradient(135deg,#F3F3F2 0 10px,#EDEDEA 10px 20px)"><span style="font-size:22px;line-height:1">+</span>Add photo<input type="file" accept="image/*" onChange="{{ d.onPhoto }}" style="display:none"></input></label></sc-if>
+              <sc-if value="{{ d.off }}" hint-placeholder-val="{{ false }}"><span style="position:absolute;top:10px;left:10px;height:26px;padding:0 10px;border-radius:13px;background:#111;color:#fff;font-size:11px;font-weight:600;display:flex;align-items:center">Sold out</span></sc-if>
+            </div>
+            <div style="padding:0 4px;display:flex;justify-content:space-between;align-items:flex-start;gap:8px"><div style="display:flex;flex-direction:column;gap:2px;min-width:0"><span style="font-size:14px;font-weight:600">{{ d.name }}</span><span style="font-size:11px;color:#9A9A96">{{ d.cat }} · ★ {{ d.rating }}</span></div>
+              <div onClick="{{ d.toggle }}" title="Availability" style="width:40px;height:24px;flex-shrink:0;border-radius:12px;background:{{ d.track }};position:relative;cursor:pointer;transition:background .2s"><span style="position:absolute;top:3px;left:{{ d.knob }};width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s"></span></div>
+            </div>
+            <div style="display:flex;align-items:center;height:42px;border-radius:21px;background:#F3F3F2;padding:0 14px;gap:6px"><span style="font-size:12px;color:#9A9A96">Rs</span><input value="{{ d.price }}" onChange="{{ d.onPrice }}" inputmode="numeric" style="flex:1;min-width:0;border:none;background:none;outline:none;font-size:15px;font-weight:600;color:#E0521B"></input><span style="font-size:11px;color:#9A9A96">{{ d.soldToday }} today</span></div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- RIDERS -->
+    <sc-if value="{{ isRiders }}" hint-placeholder-val="{{ false }}">
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px">
+      <sc-for list="{{ riderRows }}" as="r" hint-placeholder-count="5">
+        <div style="padding:18px;border-radius:28px;background:#fff;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;align-items:center;gap:12px"><img src="{{ r.img }}" alt="{{ r.name }}" style="width:52px;height:52px;border-radius:50%;object-fit:cover;flex-shrink:0"></img><div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">{{ r.name }}</span><span style="font-size:12px;color:#9A9A96">{{ r.bike }}</span></div><span style="height:26px;padding:0 10px;border-radius:13px;background:{{ r.pillBg }};color:{{ r.pillColor }};font-size:11px;font-weight:600;display:flex;align-items:center">{{ r.statusLabel }}</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+            <div style="padding:10px 12px;border-radius:16px;background:#F6F6F5;display:flex;flex-direction:column;gap:2px"><span style="font-size:17px;font-weight:600">{{ r.trips }}</span><span style="font-size:11px;color:#9A9A96">Trips today</span></div>
+            <div style="padding:10px 12px;border-radius:16px;background:#F6F6F5;display:flex;flex-direction:column;gap:2px"><span style="font-size:17px;font-weight:600">★ {{ r.rating }}</span><span style="font-size:11px;color:#9A9A96">Rating</span></div>
+            <div style="padding:10px 12px;border-radius:16px;background:#F6F6F5;display:flex;flex-direction:column;gap:2px"><span style="font-size:17px;font-weight:600">{{ r.avg }}m</span><span style="font-size:11px;color:#9A9A96">Avg time</span></div>
+          </div>
+          <span style="font-size:12px;color:#555">{{ r.note }}</span>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+
+    <!-- PROMOS -->
+    <sc-if value="{{ isPromos }}" hint-placeholder-val="{{ false }}">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px;align-items:start">
+      <div style="border-radius:28px;background:#fff;padding:8px 20px;display:flex;flex-direction:column">
+        <sc-for list="{{ promoRows }}" as="p" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:14px;padding:16px 0;border-bottom:1px solid #F0F0EE">
+            <span style="height:36px;padding:0 14px;border-radius:12px;border:1.5px dashed #C9C9C4;font-size:13px;font-weight:600;letter-spacing:0.04em;display:flex;align-items:center">{{ p.code }}</span>
+            <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">{{ p.pct }}% off</span><span style="font-size:12px;color:#9A9A96">Used {{ p.uses }} times</span></div>
+            <div onClick="{{ p.toggle }}" style="width:40px;height:24px;border-radius:12px;background:{{ p.track }};position:relative;cursor:pointer;transition:background .2s"><span style="position:absolute;top:3px;left:{{ p.knob }};width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s"></span></div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="border-radius:28px;background:#fff;padding:22px;display:flex;flex-direction:column;gap:14px">
+        <span style="font-size:15px;font-weight:600">New promo code</span>
+        <div style="height:50px;border-radius:25px;background:#F3F3F2;display:flex;align-items:center;padding:0 18px"><input value="{{ newCode }}" onChange="{{ onNewCode }}" placeholder="Code (e.g. WEEKEND15)" style="flex:1;border:none;background:none;outline:none;font-size:14px;text-transform:uppercase;min-width:0"></input></div>
+        <div style="display:flex;gap:8px">
+          <sc-for list="{{ pctOpts }}" as="po" hint-placeholder-count="4">
+            <button onClick="{{ po.pick }}" style="flex:1;height:42px;border-radius:21px;border:1px solid {{ po.border }};background:{{ po.bg }};color:{{ po.color }};font-size:13px;font-weight:500;cursor:pointer">{{ po.label }}</button>
+          </sc-for>
+        </div>
+        <button onClick="{{ addPromo }}" style="height:52px;border-radius:26px;border:none;background:#111;color:#fff;font-size:15px;font-weight:500;cursor:pointer">Create code</button>
+      </div>
+    </div>
+    </sc-if>
+    <!-- SETTINGS -->
+    <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;align-items:start">
+      <div style="padding:22px;border-radius:28px;background:#fff;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Store details</span><span style="font-size:12px;color:#9A9A96">Customers see this in the app</span></div>
+        <sc-for list="{{ storeFields }}" as="sf" hint-placeholder-count="4">
+          <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:12px;font-weight:500;color:#555">{{ sf.label }}</span><div style="height:48px;border-radius:24px;background:#F3F3F2;display:flex;align-items:center;padding:0 18px"><input value="{{ sf.value }}" onChange="{{ sf.onChange }}" style="flex:1;border:none;background:none;outline:none;font-size:14px;min-width:0"></input></div></div>
+        </sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div style="padding:22px;border-radius:28px;background:#fff;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Delivery</span><span style="font-size:12px;color:#9A9A96">Fees and timings</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+            <sc-for list="{{ deliveryFields }}" as="df" hint-placeholder-count="4">
+              <div style="display:flex;flex-direction:column;gap:6px"><span style="font-size:12px;font-weight:500;color:#555">{{ df.label }}</span><div style="height:48px;border-radius:24px;background:#F3F3F2;display:flex;align-items:center;gap:6px;padding:0 16px"><span style="font-size:12px;color:#9A9A96">{{ df.pre }}</span><input value="{{ df.value }}" onChange="{{ df.onChange }}" inputmode="numeric" style="flex:1;border:none;background:none;outline:none;font-size:14px;font-weight:600;min-width:0"></input><span style="font-size:12px;color:#9A9A96">{{ df.post }}</span></div></div>
+            </sc-for>
+          </div>
+        </div>
+        <div style="padding:8px 22px;border-radius:28px;background:#fff;display:flex;flex-direction:column">
+          <span style="font-size:15px;font-weight:600;padding:14px 0 6px">Orders & payments</span>
+          <sc-for list="{{ toggles }}" as="tg" hint-placeholder-count="6">
+            <div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #F0F0EE">
+              <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:500">{{ tg.label }}</span><span style="font-size:12px;color:#9A9A96">{{ tg.sub }}</span></div>
+              <div onClick="{{ tg.toggle }}" style="width:40px;height:24px;flex-shrink:0;border-radius:12px;background:{{ tg.track }};position:relative;cursor:pointer;transition:background .2s"><span style="position:absolute;top:3px;left:{{ tg.knob }};width:18px;height:18px;border-radius:50%;background:#fff;transition:left .2s"></span></div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="grid-column:1/-1;display:flex;justify-content:flex-end;gap:10px">
+        <button onClick="{{ resetSettings }}" style="height:50px;padding:0 24px;border-radius:25px;border:none;background:#fff;font-size:14px;font-weight:500;cursor:pointer">Discard changes</button>
+        <button onClick="{{ saveSettings }}" style="height:50px;padding:0 28px;border-radius:25px;border:none;background:#111;color:#fff;font-size:14px;font-weight:500;cursor:pointer">Save settings</button>
+      </div>
+    </div>
+    </sc-if>
+  </main>
+
+  <!-- ORDER DRAWER -->
+  <sc-if value="{{ sel }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeSel }}" style="position:fixed;inset:0;background:rgba(17,17,17,0.25);z-index:40"></div>
+  <div style="position:fixed;top:12px;right:12px;bottom:12px;width:420px;max-width:calc(100vw - 24px);background:#F4F4F3;border-radius:32px;z-index:41;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,0.18);overflow:hidden">
+    <div style="padding:22px 22px 14px;display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:20px;font-weight:600;letter-spacing:-0.02em">Order {{ sel.id }}</span><span style="font-size:12px;color:#9A9A96">{{ sel.time }} · {{ sel.pay }}</span></div>
+      <button onClick="{{ closeSel }}" style="width:40px;height:40px;border-radius:50%;border:none;background:#fff;font-size:18px;cursor:pointer">×</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;overflow-x:hidden;min-width:0;padding:0 16px 16px;display:flex;flex-direction:column;gap:10px">
+      <div style="padding:16px;border-radius:24px;background:#fff;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;gap:6px"><sc-for list="{{ selSteps }}" as="ss" hint-placeholder-count="4"><div style="flex:1;display:flex;flex-direction:column;gap:6px"><div style="height:5px;border-radius:3px;background:{{ ss.bar }}"></div><span style="font-size:10px;color:{{ ss.text }}">{{ ss.label }}</span></div></sc-for></div>
+        <sc-if value="{{ sel.cancelled }}" hint-placeholder-val="{{ false }}"><span style="font-size:13px;color:#E0521B;font-weight:600">This order has been cancelled</span></sc-if>
+      </div>
+      <div style="padding:16px;border-radius:24px;background:#fff;display:flex;align-items:center;gap:12px">
+        <div style="width:44px;height:44px;border-radius:50%;background:#F3F3F2;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600">{{ sel.initials }}</div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:14px;font-weight:600">{{ sel.customer }}</span><span style="font-size:12px;color:#9A9A96">{{ sel.phone }} · {{ sel.area }}</span></div>
+      </div>
+      <div style="padding:8px 16px;border-radius:24px;background:#fff;display:flex;flex-direction:column">
+        <sc-for list="{{ sel.lines }}" as="l" hint-placeholder-count="2">
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #F0F0EE">
+            <img src="{{ l.img }}" alt="" style="width:48px;height:48px;border-radius:14px;object-fit:cover"></img>
+            <div style="flex:1;display:flex;flex-direction:column;gap:2px"><span style="font-size:13px;font-weight:600">{{ l.name }}</span><span style="font-size:11px;color:#9A9A96">{{ l.size }} × {{ l.qty }}</span></div>
+            <span style="font-size:13px;font-weight:600">Rs {{ l.amount }}</span>
+          </div>
+        </sc-for>
+        <div style="display:flex;justify-content:space-between;padding:14px 0 8px;font-size:15px;font-weight:600"><span>Total</span><span>Rs {{ sel.totalLabel }}</span></div>
+      </div>
+      <sc-if value="{{ sel.needsRider }}" hint-placeholder-val="{{ false }}">
+      <div style="padding:16px;border-radius:24px;background:#fff;display:flex;flex-direction:column;gap:10px">
+        <span style="font-size:14px;font-weight:600">Assign rider</span>
+        <sc-for list="{{ freeRiders }}" as="fr" hint-placeholder-count="2">
+          <div onClick="{{ fr.pick }}" style="display:flex;align-items:center;gap:12px;padding:8px;border-radius:18px;border:1px solid {{ fr.border }};cursor:pointer">
+            <img src="{{ fr.img }}" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover"></img><span style="flex:1;font-size:13px;font-weight:500">{{ fr.name }}</span><span style="font-size:11px;color:#9A9A96">★ {{ fr.rating }}</span>
+          </div>
+        </sc-for>
+        <sc-if value="{{ noFreeRiders }}" hint-placeholder-val="{{ false }}"><span style="font-size:12px;color:#9A9A96">No rider available right now</span></sc-if>
+      </div>
+      </sc-if>
+      <sc-if value="{{ sel.riderName }}" hint-placeholder-val="{{ false }}"><div style="padding:14px 16px;border-radius:24px;background:#fff;font-size:13px;color:#555">Rider: <b style="color:#111">{{ sel.riderName }}</b></div></sc-if>
+    </div>
+    <sc-if value="{{ sel.active }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:14px 16px 16px;display:flex;gap:10px">
+      <button onClick="{{ sel.cancel }}" style="flex:1;height:54px;border-radius:27px;border:none;background:#fff;color:#E0521B;font-size:14px;font-weight:500;cursor:pointer">Cancel</button>
+      <button onClick="{{ sel.advance }}" style="flex:2;height:54px;border-radius:27px;border:none;background:#111;color:#fff;font-size:14px;font-weight:500;cursor:pointer">{{ sel.nextLabel }}</button>
+    </div>
+    </sc-if>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ addOpen }}" hint-placeholder-val="{{ false }}">
+  <div onClick="{{ closeAdd }}" style="position:fixed;inset:0;background:rgba(17,17,17,0.25);z-index:40"></div>
+  <div style="position:fixed;top:12px;right:12px;bottom:12px;width:420px;max-width:calc(100vw - 24px);background:#F4F4F3;border-radius:32px;z-index:41;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,0.18);overflow:hidden">
+    <div style="padding:22px 22px 14px;display:flex;justify-content:space-between;align-items:center">
+      <div style="display:flex;flex-direction:column;gap:2px"><span style="font-size:20px;font-weight:600;letter-spacing:-0.02em">Add new dish</span><span style="font-size:12px;color:#9A9A96">Add it to the menu</span></div>
+      <button onClick="{{ closeAdd }}" style="width:40px;height:40px;border-radius:50%;border:none;background:#fff;font-size:18px;cursor:pointer">×</button>
+    </div>
+    <div style="flex:1;overflow-y:auto;overflow-x:hidden;padding:0 16px 16px;display:flex;flex-direction:column;gap:10px">
+      <div style="padding:16px;border-radius:24px;background:#fff;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:13px;font-weight:600">Dish name</span><div style="height:50px;border-radius:25px;background:#F3F3F2;display:flex;align-items:center;padding:0 18px"><input value="{{ ndName }}" onChange="{{ onNdName }}" placeholder="e.g. Honey Garlic Breast" style="flex:1;border:none;background:none;outline:none;font-size:14px;min-width:0"></input></div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:13px;font-weight:600">Category</span><div style="display:flex;gap:8px;flex-wrap:wrap"><sc-for list="{{ ndCats }}" as="nc" hint-placeholder-count="4"><button onClick="{{ nc.pick }}" style="height:38px;padding:0 16px;border-radius:19px;border:1px solid {{ nc.border }};background:{{ nc.bg }};color:{{ nc.color }};font-size:13px;font-weight:500;cursor:pointer">{{ nc.label }}</button></sc-for></div></div>
+        <div style="display:flex;flex-direction:column;gap:8px"><span style="font-size:13px;font-weight:600">Price (Regular)</span><div style="height:50px;border-radius:25px;background:#F3F3F2;display:flex;align-items:center;gap:6px;padding:0 18px"><span style="font-size:13px;color:#9A9A96">Rs</span><input value="{{ ndPrice }}" onChange="{{ onNdPrice }}" inputmode="numeric" placeholder="890" style="flex:1;border:none;background:none;outline:none;font-size:15px;font-weight:600;color:#E0521B;min-width:0"></input></div><span style="font-size:11px;color:#9A9A96">Large and Double prices are calculated automatically</span></div>
+      </div>
+      <div style="padding:16px;border-radius:24px;background:#fff;display:flex;flex-direction:column;gap:10px"><span style="font-size:13px;font-weight:600">Photo</span><label style="height:160px;border-radius:20px;overflow:hidden;cursor:pointer;position:relative;display:flex;align-items:center;justify-content:center;color:#9A9A96;font-size:13px;background:repeating-linear-gradient(135deg,#F3F3F2 0 10px,#EDEDEA 10px 20px)"><sc-if value="{{ ndImg }}" hint-placeholder-val="{{ false }}"><img src="{{ ndImg }}" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover"></img></sc-if><span style="position:relative;height:34px;padding:0 16px;border-radius:17px;background:#fff;color:#111;display:flex;align-items:center;font-size:12px;font-weight:500">{{ ndImgLabel }}</span><input type="file" accept="image/*" onChange="{{ onNdPhoto }}" style="display:none"></input></label></div>
+    </div>
+    <div style="padding:14px 16px 16px"><button onClick="{{ saveDish }}" style="width:100%;height:54px;border-radius:27px;border:none;background:#111;color:#fff;font-size:15px;font-weight:500;cursor:pointer">Add to menu</button></div>
+  </div>
+  </sc-if>
+
+  <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:60;background:#111;color:#fff;font-size:13px;padding:12px 20px;border-radius:22px;white-space:nowrap">{{ toast }}</div>
+  </sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;sidebar&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;],&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;comfortable&quot;,&quot;compact&quot;],&quot;default&quot;:&quot;comfortable&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+const U = (id, w) => 'https://images.unsplash.com/photo-' + id + '?auto=format&fit=crop&w=' + (w || 500) + '&q=70';
+const DISHES = [
+  { id: 'grilled', name: 'Grilled Breast', cat: 'Grilled', price: 890, rating: 4.8, sold: 64, img: U('1532550907401-a500c9a57435') },
+  { id: 'peri', name: 'Peri Peri Breast', cat: 'Peri peri', price: 950, rating: 4.7, sold: 51, img: U('1643594462181-7667928d072e') },
+  { id: 'lemon', name: 'Lemon Pepper', cat: 'Grilled', price: 920, rating: 4.6, sold: 22, img: U('1670398564097-0762e1b30b3a') },
+  { id: 'bowl', name: 'Tikka Breast Bowl', cat: 'Bowls', price: 780, rating: 4.9, sold: 58, img: U('1762631934518-f75e233413ca') },
+  { id: 'bbq', name: 'BBQ Glazed Breast', cat: 'Grilled', price: 990, rating: 4.7, sold: 31, img: U('1657048465421-087063313187') },
+  { id: 'roast', name: 'Roast Breast & Potatoes', cat: 'Grilled', price: 1090, rating: 4.8, sold: 18, img: U('1703219342277-1a78d6b4a27f') },
+  { id: 'tray', name: 'Family Grill Tray', cat: 'Grilled', price: 2450, rating: 4.9, sold: 12, img: U('1668838195568-6a336797587f') },
+  { id: 'mixed', name: 'Mixed Grill Platter', cat: 'Peri peri', price: 1850, rating: 4.8, sold: 15, img: U('1777195132418-a4c365717f2e') },
+  { id: 'peririce', name: 'Peri Peri Rice Bowl', cat: 'Bowls', price: 850, rating: 4.7, sold: 27, img: U('1781334266250-a7e72fdf539f') },
+  { id: 'saladbowl', name: 'Chicken Salad Bowl', cat: 'Bowls', price: 720, rating: 4.6, sold: 20, img: U('1781332149415-f420708ab98f') },
+  { id: 'fries', name: 'Crispy strips', cat: 'Sides', price: 390, rating: 4.6, sold: 44, img: U('1598515214211-89d3c73ae83b') },
+  { id: 'wrap', name: 'Flatbread plate', cat: 'Sides', price: 450, rating: 4.7, sold: 19, img: U('1777891258069-454e66f8bedc') },
+];
+const SIZES = [{ label: 'Regular', m: 1 }, { label: 'Large', m: 1.35 }, { label: 'Double', m: 1.8 }];
+const RIDERS = [
+  { id: 'r1', name: 'Usman Tariq', bike: 'Honda 125 · LEA-4471', rating: 4.9, trips: 11, avg: 22, img: U('1507003211169-0a1dd7228f2d', 160) },
+  { id: 'r2', name: 'Hamza Ali', bike: 'Yamaha YBR · LEB-2210', rating: 4.8, trips: 9, avg: 24, img: U('1500648767791-00dcc994a43e', 160) },
+  { id: 'r3', name: 'Faisal Raza', bike: 'Honda 70 · LEC-9083', rating: 4.7, trips: 7, avg: 26, img: U('1506794778202-cad84cf45f1d', 160) },
+  { id: 'r4', name: 'Kamran Sheikh', bike: 'Suzuki GD · LED-1156', rating: 4.6, trips: 0, avg: 25, img: U('1472099645785-5658abf4ff4e', 160), offline: true },
+];
+const ORDERS = [
+  { id: 'CB-2047', customer: 'Ayesha Khan', phone: '+92 300 1234567', area: 'DHA Phase 5', items: [['grilled', 0, 1], ['peri', 1, 1]], pay: 'Cash', status: 'new', time: '9:41 PM' },
+  { id: 'CB-2046', customer: 'Zain Malik', phone: '+92 321 4455667', area: 'Gulberg III', items: [['bowl', 0, 2]], pay: 'JazzCash', status: 'new', time: '9:38 PM' },
+  { id: 'CB-2045', customer: 'Sana Iqbal', phone: '+92 333 9087612', area: 'Model Town', items: [['tray', 0, 1], ['fries', 0, 2]], pay: 'Card', status: 'prep', time: '9:30 PM' },
+  { id: 'CB-2044', customer: 'Ahmed Raza', phone: '+92 345 1122334', area: 'DHA Phase 6', items: [['bbq', 1, 1]], pay: 'Cash', status: 'prep', time: '9:24 PM' },
+  { id: 'CB-2043', customer: 'Hira Nadeem', phone: '+92 300 7766554', area: 'Johar Town', items: [['mixed', 0, 1], ['wrap', 0, 1]], pay: 'Easypaisa', status: 'out', time: '9:12 PM', rider: 'r1' },
+  { id: 'CB-2042', customer: 'Omar Farooq', phone: '+92 322 3344556', area: 'Cantt', items: [['peririce', 0, 1]], pay: 'Card', status: 'out', time: '9:05 PM', rider: 'r2' },
+  { id: 'CB-2041', customer: 'Maryam Aslam', phone: '+92 301 2233445', area: 'DHA Phase 5', items: [['saladbowl', 0, 2], ['lemon', 0, 1]], pay: 'Cash', status: 'done', time: '8:48 PM', rider: 'r1' },
+  { id: 'CB-2040', customer: 'Bilal Hassan', phone: '+92 334 5566778', area: 'Gulberg II', items: [['grilled', 2, 1]], pay: 'JazzCash', status: 'done', time: '8:31 PM', rider: 'r3' },
+  { id: 'CB-2039', customer: 'Fatima Noor', phone: '+92 300 8899001', area: 'Faisal Town', items: [['roast', 0, 1]], pay: 'Card', status: 'cancel', time: '8:20 PM' },
+  { id: 'CB-2038', customer: 'Ali Shah', phone: '+92 321 6677889', area: 'DHA Phase 4', items: [['peri', 0, 3], ['fries', 0, 1]], pay: 'Cash', status: 'done', time: '8:02 PM', rider: 'r2' },
+];
+const ST = {
+  new: { label: 'New', bg: '#FCE7DD', color: '#A63A12', next: 'Accept' },
+  prep: { label: 'On grill', bg: '#FBEFD3', color: '#7A5000', next: 'Hand to rider' },
+  out: { label: 'On the way', bg: '#E2EAF8', color: '#234C94', next: 'Mark delivered' },
+  done: { label: 'Delivered', bg: '#E0F0E4', color: '#2A6B40' },
+  cancel: { label: 'Cancelled', bg: '#EDEDEA', color: '#6E6E6A' },
+};
+const FLOW = ['new', 'prep', 'out', 'done'];
+const HOURS = [['12p', 4], ['1p', 9], ['2p', 7], ['3p', 5], ['4p', 6], ['5p', 10], ['6p', 14], ['7p', 19], ['8p', 22], ['9p', 17], ['10p', 0], ['11p', 0]];
+const NAV = [
+  ['dash', 'Dashboard', 'M4 4h7v7H4zM13 4h7v4h-7zM13 10h7v10h-7zM4 13h7v7H4z'],
+  ['orders', 'Orders', 'M6 3h12v18l-3-2-3 2-3-2-3 2zM9 8h6M9 12h6'],
+  ['menu', 'Menu', 'M5 3v8a3 3 0 0 0 6 0V3M8 3v18M17 3c-2 2-2 7 0 9v9'],
+  ['riders', 'Riders', 'M5 17a2 2 0 1 0 0 .1M19 17a2 2 0 1 0 0 .1M7 17h8l3-6h-5l-2-4H8M14 7h3'],
+  ['promos', 'Promos', 'M3 12l9-9h8v8l-9 9zM16 8h.01'],
+];
+const CFG = { name: 'Chicken Brust', branch: 'DHA Phase 5, Lahore', phone: '+92 42 111 278 787', hours: '11am – 2am', fee: '150', freeOver: '1500', radius: '6', prep: '15', autoAccept: false, sound: true, sms: true, cod: true, wallet: true, card: true };
+const MENU_KEY = 'chicken-brust-menu';
+const loadMenu = () => { try { const m = JSON.parse(localStorage.getItem(MENU_KEY) || 'null'); if (!m) return {}; return { extra: m.extra || [], prices: { ...Object.fromEntries(DISHES.map(d => [d.id, String(d.price)])), ...m.prices }, avail: { ...Object.fromEntries(DISHES.map(d => [d.id, d.id !== 'roast'])), ...m.avail } }; } catch (e) { return {}; } };
+const fmt = n => Math.round(n).toLocaleString('en-PK');
+const on = sel => sel ? { bg: '#111', color: '#fff', border: '#111' } : { bg: 'transparent', color: '#111', border: '#DCDCD8' };
+const unit = (d, sz) => Math.round(d.price * SIZES[sz].m / 10) * 10;
+const tog = v => ({ track: v ? '#111' : '#D6D6D2', knob: v ? '19px' : '3px' });
+
+class Component extends DCLogic {
+  state = {
+    page: 'dash', query: '', orders: ORDERS, filter: 'all', selId: null, store: true, toast: '', cat: 'All',
+    avail: Object.fromEntries(DISHES.map(d => [d.id, d.id !== 'roast'])),
+    prices: Object.fromEntries(DISHES.map(d => [d.id, String(d.price)])),
+    promos: [{ code: 'BRUST10', pct: 10, uses: 184, on: true }, { code: 'FIRSTBITE', pct: 20, uses: 62, on: true }, { code: 'RAMZAN15', pct: 15, uses: 410, on: false }],
+    newCode: '', newPct: 10,
+    cfg: CFG, savedCfg: CFG,
+    extra: [], addOpen: false, ndName: '', ndCat: 'Grilled', ndPrice: '', ndImg: '',
+    ...loadMenu(),
+  };
+  persistMenu() {
+    const s = this.state;
+    if (this._m && this._m[0] === s.extra && this._m[1] === s.prices && this._m[2] === s.avail) return;
+    const first = !this._m;
+    this._m = [s.extra, s.prices, s.avail];
+    if (first && !localStorage.getItem(MENU_KEY) && !s.extra.length) return;
+    try { localStorage.setItem(MENU_KEY, JSON.stringify({ extra: s.extra, prices: s.prices, avail: s.avail })); } catch (e) { setTimeout(() => this.flash('Photo too large to save'), 0); }
+  }
+  readPhoto = (file, cb) => {
+    if (!file) return;
+    const r = new FileReader();
+    r.onload = () => { const im = new Image(); im.onload = () => { const sc = Math.min(1, 600 / Math.max(im.width, im.height)); const c = document.createElement('canvas'); c.width = im.width * sc; c.height = im.height * sc; c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); cb(c.toDataURL('image/jpeg', 0.8)); }; im.src = r.result; };
+    r.readAsDataURL(file);
+  };
+  setCfg = (k, v) => this.setState(s => ({ cfg: { ...s.cfg, [k]: v } }));
+  componentWillUnmount() { clearTimeout(this._t); clearTimeout(this._c); }
+  flash = toast => { clearTimeout(this._t); this.setState({ toast }); this._t = setTimeout(() => this.setState({ toast: '' }), 1800); };
+  patch = (id, p) => this.setState(s => ({ orders: s.orders.map(o => o.id === id ? { ...o, ...p } : o) }));
+  price = d => Number(this.state.prices[d.id]) || d.price;
+  advance = o => {
+    const nx = FLOW[FLOW.indexOf(o.status) + 1];
+    if (nx === 'out' && !o.rider) {
+      const busy = new Set(this.state.orders.filter(x => x.status === 'out' && x.rider).map(x => x.rider));
+      const free = RIDERS.find(r => !r.offline && !busy.has(r.id));
+      if (!free) { this.setState({ selId: o.id }); this.flash('No rider available right now'); return; }
+      this.patch(o.id, { status: 'out', rider: free.id }); this.flash(o.id + ' → ' + free.name + ' (On the way)'); return;
+    }
+    this.patch(o.id, { status: nx }); this.flash(o.id + ' → ' + ST[nx].label);
+  };
+
+  renderVals() {
+    this.persistMenu();
+    const s = this.state, p = this.props;
+    const dark = (p.sidebar ?? 'dark') === 'dark';
+    const dish = id => DISHES.find(d => d.id === id);
+    const total = o => o.items.reduce((a, [id, sz, q]) => a + unit({ price: this.price(dish(id)) }, sz) * q, 0);
+    const summary = o => o.items.map(([id, , q]) => q + '× ' + dish(id).name).join(', ');
+    const q = s.query.trim().toLowerCase();
+    const busy = new Set(s.orders.filter(o => o.status === 'out' && o.rider).map(o => o.rider));
+    const rowOf = o => ({
+      ...o, summary: summary(o), totalLabel: fmt(total(o)), img: dish(o.items[0][0]).img,
+      statusLabel: ST[o.status].label, pillBg: ST[o.status].bg, pillColor: ST[o.status].color, nextLabel: ST[o.status].next || '',
+      rowBg: o.id === s.selId ? '#F6F6F5' : 'transparent',
+      open: () => this.setState({ selId: o.id }),
+      advance: e => { e.stopPropagation(); this.advance(o); },
+      cancelLabel: s.confirmId === o.id ? 'Confirm cancel?' : 'Cancel',
+      cancelBg: s.confirmId === o.id ? '#E0521B' : '#fff', cancelColor: s.confirmId === o.id ? '#fff' : '#E0521B',
+      cancel: e => {
+        e.stopPropagation();
+        if (s.confirmId !== o.id) { clearTimeout(this._c); this.setState({ confirmId: o.id }); this._c = setTimeout(() => this.setState({ confirmId: null }), 3000); return; }
+        this.patch(o.id, { status: 'cancel', rider: null }); this.setState({ confirmId: null }); this.flash(o.id + ' cancelled');
+      },
+    });
+    const live = s.orders.filter(o => o.status !== 'cancel');
+    const sales = live.reduce((a, o) => a + total(o), 0);
+    const counts = Object.fromEntries(Object.keys(ST).map(k => [k, s.orders.filter(o => o.status === k).length]));
+    const maxH = Math.max(...HOURS.map(h => h[1]));
+    const selO = s.orders.find(o => o.id === s.selId);
+    const titles = { dash: 'Dashboard', orders: 'Orders', menu: 'Menu', riders: 'Riders', promos: 'Promo codes', settings: 'Settings' };
+    const filtered = s.orders.filter(o => (s.filter === 'all' || o.status === s.filter) && (!q || (o.id + o.customer + summary(o)).toLowerCase().includes(q)));
+    const ALL = [...s.extra, ...DISHES];
+    const menuF = ALL.filter(d => (s.cat === 'All' || d.cat === s.cat) && (!q || d.name.toLowerCase().includes(q)));
+    const sel = selO && (() => {
+      const r = rowOf(selO);
+      return {
+        ...r, initials: selO.customer.split(' ').map(w => w[0]).join(''),
+        cancelled: selO.status === 'cancel', active: !['done', 'cancel'].includes(selO.status),
+        needsRider: ['new', 'prep'].includes(selO.status),
+        riderName: selO.rider ? RIDERS.find(x => x.id === selO.rider).name : '',
+        lines: selO.items.map(([id, sz, qty]) => { const d = dish(id); return { img: d.img, name: d.name, size: SIZES[sz].label, qty, amount: fmt(unit({ price: this.price(d) }, sz) * qty) }; }),
+        cancel: () => { this.patch(selO.id, { status: 'cancel', rider: null }); this.flash(selO.id + ' cancelled'); },
+        advance: () => this.advance(selO),
+      };
+    })();
+    const freeRiders = RIDERS.filter(r => !r.offline && (!busy.has(r.id) || (selO && selO.rider === r.id)));
+    return {
+      sb: dark ? { bg: '#111', text: '#fff', muted: '#8A8A86', card: '#1E1E1D', line: '#262625', navText: '#A5A5A1' } : { bg: '#F7F7F6', text: '#111', muted: '#9A9A96', card: '#fff', line: '#E6E6E3', navText: '#555' },
+      storeDot: s.store ? '#3BB26B' : '#8A8A86', storeHalo: s.store ? 'rgba(59,178,107,0.22)' : 'transparent',
+      onSettings: () => this.setState({ page: 'settings', query: '' }),
+      setBg: s.page === 'settings' ? (dark ? '#fff' : '#111') : 'transparent', setColor: s.page === 'settings' ? (dark ? '#111' : '#fff') : (dark ? '#A5A5A1' : '#555'),
+      isSettings: s.page === 'settings',
+      storeFields: [['name', 'Store name'], ['branch', 'Branch address'], ['phone', 'Contact number'], ['hours', 'Opening hours']].map(([k, l]) => ({ label: l, value: s.cfg[k], onChange: e => this.setCfg(k, e.target.value) })),
+      deliveryFields: [['fee', 'Delivery fee', 'Rs', ''], ['freeOver', 'Free delivery above', 'Rs', ''], ['radius', 'Delivery radius', '', 'km'], ['prep', 'Avg prep time', '', 'min']].map(([k, l, pre, post]) => ({ label: l, pre, post, value: s.cfg[k], onChange: e => this.setCfg(k, e.target.value.replace(/[^\d.]/g, '')) })),
+      toggles: [['autoAccept', 'Auto-accept orders', 'New orders go straight to the grill'], ['sound', 'Sound alert on new order', 'Plays a chime in the admin panel'], ['sms', 'SMS updates to customers', 'Order confirmed, on the way, delivered'], ['cod', 'Cash on delivery', 'Pay the rider in cash'], ['wallet', 'JazzCash / Easypaisa', 'Mobile wallet payments'], ['card', 'Debit / credit card', 'Online card payments']].map(([k, l, sub]) => ({ label: l, sub, ...tog(s.cfg[k]), toggle: () => this.setCfg(k, !s.cfg[k]) })),
+      saveSettings: () => { this.setState({ savedCfg: s.cfg }); this.flash('Settings saved'); },
+      resetSettings: () => { this.setState({ cfg: s.savedCfg }); this.flash('Changes discarded'); }, onLogout: () => this.flash('Logged out (demo)'),
+      nav: NAV.map(([k, l, icon]) => {
+        const a = k === s.page;
+        return { label: l, icon, badge: k === 'orders' ? counts.new : 0, go: () => this.setState({ page: k, query: '' }),
+          bg: a ? (dark ? '#fff' : '#111') : 'transparent', color: a ? (dark ? '#111' : '#fff') : (dark ? '#A5A5A1' : '#555') };
+      }),
+      storeLabel: s.store ? 'Store open' : 'Store closed', storeTrack: s.store ? '#E0521B' : '#555', storeKnob: s.store ? '19px' : '3px',
+      toggleStore: () => { this.setState({ store: !s.store }); this.flash(s.store ? 'Store closed — new orders paused' : 'Store is open'); },
+      pageTitle: titles[s.page], pageLabel: titles[s.page],
+      isDash: s.page === 'dash', isOrders: s.page === 'orders', isMenu: s.page === 'menu', isRiders: s.page === 'riders', isPromos: s.page === 'promos',
+      query: s.query, onQuery: e => this.setState({ query: e.target.value, page: ['menu', 'orders'].includes(s.page) ? s.page : 'orders' }),
+      goOrders: () => this.setState({ page: 'orders', filter: 'new' }),
+      newCount: counts.new,
+      kpis: [
+        { label: "Today's sales", value: 'Rs ' + fmt(sales), sub: '+18% vs last Tuesday', bg: '#111', color: '#fff' },
+        { label: 'Orders', value: String(live.length), sub: counts.cancel + ' cancelled', bg: '#fff', color: '#111' },
+        { label: 'Avg order value', value: 'Rs ' + fmt(live.length ? sales / live.length : 0), sub: 'Target Rs 1,500', bg: '#fff', color: '#111' },
+        { label: 'Active orders', value: String(counts.new + counts.prep + counts.out), sub: busy.size + ' riders on the way', bg: '#fff', color: '#111' },
+      ],
+      salesLabel: fmt(sales),
+      hours: HOURS.map(([l, v], i) => ({ label: l, h: Math.max(4, v / maxH * 160) + 'px', bg: i === 9 ? '#E0521B' : v ? '#111' : '#EDEDEA', tip: v + ' orders' })),
+      queue: s.orders.filter(o => ['new', 'prep', 'out'].includes(o.status)).slice(0, 5).map(rowOf),
+      queueEmpty: counts.new + counts.prep + counts.out === 0,
+      topDishes: [...DISHES].sort((a, b) => b.sold - a.sold).slice(0, 4).map((d, i) => ({ ...d, rank: i + 1, open: () => this.setState({ page: 'menu', cat: 'All', query: d.name }) })),
+      statusTabs: [['all', 'All', s.orders.length], ...Object.keys(ST).map(k => [k, ST[k].label, counts[k]])].map(([k, l, c]) => ({ label: l, count: c, ...on(k === s.filter), pick: () => this.setState({ filter: k }) })),
+      orderRows: filtered.map(rowOf), ordersEmpty: filtered.length === 0,
+      rowPad: (p.density ?? 'comfortable') === 'compact' ? '8px' : '14px',
+      cats: ['All', 'Grilled', 'Peri peri', 'Bowls', 'Sides'].map(c => ({ label: c, ...on(c === s.cat), pick: () => this.setState({ cat: c }) })),
+      availLabel: ALL.filter(d => s.avail[d.id]).length + ' / ' + ALL.length + ' dishes available',
+      addOpen: s.addOpen, openAdd: () => this.setState({ addOpen: true }), closeAdd: () => this.setState({ addOpen: false }),
+      ndName: s.ndName, onNdName: e => this.setState({ ndName: e.target.value }),
+      ndPrice: s.ndPrice, ndImg: s.ndImg, ndImgLabel: s.ndImg ? 'Change photo' : 'Choose photo',
+      onNdPhoto: e => this.readPhoto(e.target.files[0], img => this.setState({ ndImg: img })),
+      onNdPrice: e => this.setState({ ndPrice: e.target.value.replace(/\D/g, '') }),
+      ndCats: ['Grilled', 'Peri peri', 'Bowls', 'Sides'].map(c => ({ label: c, ...on(c === s.ndCat), pick: () => this.setState({ ndCat: c }) })),
+      saveDish: () => {
+        const name = s.ndName.trim();
+        if (!name) return this.flash('Enter a dish name');
+        if (!Number(s.ndPrice)) return this.flash('Enter a price');
+        const id = 'new-' + Date.now();
+        this.setState({
+          extra: [{ id, name, cat: s.ndCat, price: Number(s.ndPrice), rating: 4.5, sold: 0, img: s.ndImg, isNew: true }, ...s.extra],
+          avail: { ...s.avail, [id]: true }, prices: { ...s.prices, [id]: s.ndPrice },
+          addOpen: false, ndName: '', ndPrice: '', ndImg: '', cat: 'All',
+        });
+        this.flash(name + ' added to menu');
+      },
+      menuRows: menuF.map(d => ({
+        ...d, ...tog(s.avail[d.id]), off: !s.avail[d.id], noImg: !d.img,
+        onPhoto: e => this.readPhoto(e.target.files[0], img => this.setState(st => ({ extra: st.extra.map(x => x.id === d.id ? { ...x, img } : x) }))), opacity: s.avail[d.id] ? 1 : 0.6, price: s.prices[d.id], soldToday: d.sold,
+        toggle: () => { this.setState({ avail: { ...s.avail, [d.id]: !s.avail[d.id] } }); this.flash(d.name + (s.avail[d.id] ? ' sold out' : ' back in stock')); },
+        onPrice: e => this.setState({ prices: { ...s.prices, [d.id]: e.target.value.replace(/\D/g, '') } }),
+      })),
+      riderRows: RIDERS.map(r => {
+        const st = r.offline ? 'off' : busy.has(r.id) ? 'busy' : 'free';
+        const cur = s.orders.find(o => o.status === 'out' && o.rider === r.id);
+        return { ...r, statusLabel: { off: 'Offline', busy: 'On delivery', free: 'Available' }[st],
+          pillBg: { off: '#EDEDEA', busy: '#E2EAF8', free: '#E0F0E4' }[st], pillColor: { off: '#6E6E6A', busy: '#234C94', free: '#2A6B40' }[st],
+          note: cur ? cur.id + ' · ' + cur.area + ' — en route' : r.offline ? 'Shift starts at 11am' : 'Waiting at branch' };
+      }),
+      promoRows: s.promos.map((pr, i) => ({ ...pr, ...tog(pr.on), toggle: () => this.setState({ promos: s.promos.map((x, j) => j === i ? { ...x, on: !x.on } : x) }) })),
+      newCode: s.newCode, onNewCode: e => this.setState({ newCode: e.target.value.toUpperCase().replace(/\s/g, '') }),
+      pctOpts: [5, 10, 15, 20].map(v => ({ label: v + '%', ...on(v === s.newPct), pick: () => this.setState({ newPct: v }) })),
+      addPromo: () => {
+        if (!s.newCode) return this.flash('Enter a code');
+        if (s.promos.some(x => x.code === s.newCode)) return this.flash('This code already exists');
+        this.setState({ promos: [{ code: s.newCode, pct: s.newPct, uses: 0, on: true }, ...s.promos], newCode: '' }); this.flash(s.newCode + ' created');
+      },
+      sel: sel || null, closeSel: () => this.setState({ selId: null }),
+      selSteps: FLOW.map((k, i) => { const cur = selO ? FLOW.indexOf(selO.status) : -1; return { label: ST[k].label, bar: i <= cur ? '#111' : '#DADAD6', text: i <= cur ? '#111' : '#9A9A96' }; }),
+      freeRiders: freeRiders.map(r => ({ ...r, border: selO && selO.rider === r.id ? '#111' : '#EDEDEA', pick: () => { this.patch(selO.id, { rider: r.id }); this.flash(r.name + ' assigned'); } })),
+      noFreeRiders: freeRiders.length === 0,
+      toast: s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

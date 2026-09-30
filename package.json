@@ -1,0 +1,11 @@
+{
+  "name": "brust-workspace",
+  "private": true,
+  "description": "Shortcut scripts so the app can be started from this folder too. The app itself lives in ./chicken-brust",
+  "scripts": {
+    "setup": "npm --prefix chicken-brust install",
+    "dev": "npm --prefix chicken-brust run dev",
+    "build": "npm --prefix chicken-brust run build",
+    "preview": "npm --prefix chicken-brust run preview"
+  }
+}

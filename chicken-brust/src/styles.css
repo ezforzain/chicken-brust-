@@ -1,0 +1,124 @@
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body, #root { margin: 0; min-height: 100%; }
+
+body {
+  font-family: 'Geist', Helvetica, Arial, sans-serif;
+  color: #111;
+  background: #EDEDEB;
+  -webkit-font-smoothing: antialiased;
+}
+
+a { color: #111; }
+a:hover { color: #E0521B; }
+button, input { font-family: inherit; }
+button { color: inherit; }
+input::placeholder { color: #9A9A96; }
+img { display: block; }
+
+.no-scrollbar { scrollbar-width: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
+
+/* Pill chips (categories, portions, filters) */
+.chip {
+  height: 38px; padding: 0 18px; border-radius: 19px; border: 1px solid;
+  font-size: 13px; font-weight: 500; cursor: pointer; white-space: nowrap; flex-shrink: 0;
+}
+
+/* Round white icon button */
+.icon-btn {
+  width: 44px; height: 44px; flex-shrink: 0; border-radius: 50%; border: none; background: #fff;
+  display: flex; align-items: center; justify-content: center; cursor: pointer; padding: 0;
+}
+
+/* iOS-style switch */
+.switch {
+  width: 40px; height: 24px; flex-shrink: 0; border-radius: 12px; position: relative;
+  cursor: pointer; transition: background .2s; border: none; padding: 0;
+}
+.switch > span {
+  position: absolute; top: 3px; width: 18px; height: 18px; border-radius: 50%;
+  background: #fff; transition: left .2s;
+}
+
+.hover-soft:hover { background: #EDEDEA !important; }
+.hover-row:hover { background: #F6F6F5 !important; }
+.hover-lift { transition: box-shadow .2s; }
+.hover-lift:hover { box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); }
+
+.status-pill {
+  height: 26px; padding: 0 10px; border-radius: 13px; font-size: 11px; font-weight: 600;
+  display: flex; align-items: center; white-space: nowrap;
+}
+
+/* ---------------- Customer app (phone) ---------------- */
+.phone-stage {
+  min-height: 100vh; min-height: 100dvh;
+  display: flex; align-items: center; justify-content: center;
+  padding: 32px 16px; background: #EDEDEB;
+}
+
+.phone {
+  width: 390px; height: 844px; border-radius: 54px; background: #F4F4F3;
+  position: relative; overflow: hidden; flex-shrink: 0;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.10), 0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+.phone-home-indicator {
+  position: absolute; bottom: 9px; left: 50%; transform: translateX(-50%);
+  width: 134px; height: 5px; border-radius: 3px; background: #111; z-index: 25;
+}
+
+/* On real phones, fill the screen instead of drawing a device frame. */
+@media (max-width: 480px) {
+  .phone-stage { padding: 0; background: #F4F4F3; }
+  .phone {
+    width: 100vw; height: 100vh; height: 100dvh; border-radius: 0; box-shadow: none;
+  }
+  .phone-statusbar, .phone-home-indicator { display: none !important; }
+}
+
+/* ---------------- Admin ---------------- */
+.admin { display: flex; min-height: 100vh; background: #EDEDEB; }
+
+.admin-sidebar {
+  width: 240px; flex-shrink: 0; display: flex; flex-direction: column; gap: 22px;
+  padding: 24px 16px 20px; position: sticky; top: 0; height: 100vh; align-self: flex-start; z-index: 30;
+}
+
+.admin-main {
+  flex: 1; min-width: 0; padding: 0 32px 48px; display: flex; flex-direction: column; gap: 24px;
+}
+
+.admin-header {
+  position: sticky; top: 0; z-index: 20; background: #EDEDEB; margin: 0 -32px; padding: 24px 32px 16px;
+  display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;
+}
+
+.nav-btn {
+  height: 44px; border: none; border-radius: 22px; display: flex; align-items: center; gap: 12px;
+  padding: 0 16px; font-size: 14px; font-weight: 500; cursor: pointer; text-align: left; width: 100%;
+}
+
+.drawer {
+  position: fixed; top: 12px; right: 12px; bottom: 12px; width: 420px; max-width: calc(100vw - 24px);
+  background: #F4F4F3; border-radius: 32px; z-index: 41; display: flex; flex-direction: column;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.18); overflow: hidden;
+}
+.drawer-backdrop { position: fixed; inset: 0; background: rgba(17, 17, 17, 0.25); z-index: 40; }
+
+/* Collapse the sidebar to icons on tablets. */
+@media (max-width: 1000px) {
+  .admin-sidebar { width: 76px; padding: 24px 10px 20px; }
+  .admin-sidebar .hide-collapsed { display: none !important; }
+  .admin-sidebar .nav-btn { justify-content: center; padding: 0; position: relative; }
+  .admin-sidebar .nav-btn .nav-badge { position: absolute; top: 2px; right: 6px; }
+  .admin-brand { justify-content: center; padding: 0 !important; }
+}
+
+@media (max-width: 640px) {
+  .admin-main { padding: 0 16px 40px; }
+  .admin-header { margin: 0 -16px; padding: 16px; }
+  .admin-search { width: 100% !important; }
+  .admin-user { display: none !important; }
+}
